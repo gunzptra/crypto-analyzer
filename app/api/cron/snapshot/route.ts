@@ -46,7 +46,17 @@ export async function GET(req: Request) {
     if (runId) await supabase.from('background_runs').update({ status: 'SUCCESS', processed: rows.length, details: { slot: slot.toISOString() }, finished_at: finishedAt.toISOString() }).eq('id', runId);
     return NextResponse.json({ ok: true, processed: rows.length, slot: slot.toISOString() });
   } catch (error) {
-    if (runId) await supabase.from('background_runs').update({ status: 'FAILED', details: { error: error instanceof Error ? error.message : 'failed' }, finished_at: new Date().toISOString() }).eq('id', runId);
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Snapshot job failed' }, { status: 500 });
-  }
+    console.error("Snapshot job failed:", error);
+
+    return Response.json(
+    {
+      error: "Snapshot job failed",
+      detail:
+        error instanceof Error
+          ? error.message
+          : String(error),
+    },
+    { status: 500 }
+  );
+}
 }

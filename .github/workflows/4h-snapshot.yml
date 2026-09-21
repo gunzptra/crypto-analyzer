@@ -16,7 +16,7 @@ jobs:
         run: |
           test -n "$APP_URL" && test -n "$CRON_SECRET"
           
-          curl -sS -i \
+          curl --fail-with-body -sS -i \
             -H "Authorization: Bearer $CRON_SECRET" \
             "$APP_URL/api/cron/snapshot"
 
